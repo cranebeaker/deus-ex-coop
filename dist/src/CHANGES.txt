@@ -1,0 +1,29 @@
+HXFix changes on top of HX 0.9.89.4
+===================================
+
+Story and missions
+- Ending: the final conversation starts (everyone was stuck letterboxed), ending
+  explosions work, cutscenes play for every player, not just the host.
+- Mission fixes: M02 Tenderloin counts kills correctly, M05 escape gear, M09 ship
+  explosions at normal rate, M10 chateau ambush fires once, M15 goals, M03/M04 flags.
+- Conversations: only the player talking picks replies; a player killed mid-talk
+  no longer breaks the NPC; forced conversations and datalinks queue up instead
+  of cancelling each other; everyone gets story subtitles.
+- Notes (door codes etc.) survive map changes and reach late joiners.
+
+Players
+- Map change: no more client crash on travel, dead players respawn with their gear,
+  duplicate names no longer swap inventories.
+- Microfibral Muscle aug works, Use Cell button works for joined players.
+- Gibbed players leave a lootable body; respawn item farming removed.
+- No crash on quitting while the inventory screen is open after the host left.
+
+Devices and weapons
+- Security consoles, cameras, keypads, med/repair bots, computers and triggers
+  behave with several players.
+- Weapon mods, ammo selection and the Change Ammo button work for joined players.
+- Nanokeys picked up by anyone open doors and datalink checks for everyone;
+  each key is listed once in the key ring.
+
+Server
+- Server browser query can no longer lock up the server.

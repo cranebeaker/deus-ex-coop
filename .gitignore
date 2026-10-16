@@ -1,0 +1,17 @@
+# Game files, third-party code and generated output stay out of the repo.
+/game/
+/agents/
+/downloads/
+/hx-0.9.89.4/
+/src/
+/ref/
+/re/
+/dist/build/
+/dist/src/System/
+/dist/src/HXCoop/
+/steamlink/redist/
+/steamlink/*.exe
+/steamlink/mock/*.dll
+*.log
+*.uxx
+__pycache__/
