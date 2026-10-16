@@ -35,11 +35,10 @@ UDP ports 7790-7792 forwarded on the host's router or everyone on the same VPN.
 
 ## Status
 
-**Beta.** Everything below is checked by automated tests with real game clients (a
-listen host plus 1 or 2 clients on one PC), including runs through the Steam relay with
-simulated internet lag and packet loss. Not yet proven: a full campaign played by
-people on separate PCs, and the real two-account Steam join (it is tested against a
-mock of Steam's API). Reports welcome in [Issues](../../issues).
+**Beta.** Every fix is covered by automated tests that run real game clients (a listen
+host plus 1 or 2 players), including runs through the Steam relay with simulated internet
+lag and packet loss, map changes with several players, and a friend's install downloading
+the fix package from the host. Found a problem? Tell us in [Issues](../../issues).
 
 What is fixed: see [BUGS.md](BUGS.md) for every bug, its root cause and its test, and
 [dist/src/CHANGES.txt](dist/src/CHANGES.txt) for the short version.
