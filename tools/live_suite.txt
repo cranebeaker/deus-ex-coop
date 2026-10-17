@@ -1,4 +1,4 @@
-# Test Map Clients Timeout
+# Test Map Clients Timeout [extra host URL options]
 HXFixTestMuscle 01_NYC_UNATCOIsland 1 300
 HXFixTestCell 01_NYC_UNATCOIsland 1 300
 HXFixTestCine 99_Endgame1 1 300
@@ -31,6 +31,7 @@ HXFixTestWeaponAmmo 01_NYC_UNATCOIsland 1 400
 HXFixTestChangeAmmo 01_NYC_UNATCOIsland 1 400
 HXFixTestInvTravel 01_NYC_UNATCOIsland 1 300
 HXFixTestConTravel 01_NYC_UNATCOIsland 1 300
+HXFixTestJumpSync 01_NYC_UNATCOIsland 2 300
 HXFixTestNanoKey 01_NYC_UNATCOIsland 1 400
 HXFixTestNotes 01_NYC_UNATCOIsland 1 600
 HXFixTestDeadDupCtl 01_NYC_UNATCOIsland 2 500
@@ -44,3 +45,7 @@ HXFixTestMission 09_NYC_Ship 1 300
 HXFixTestMission 10_Paris_Chateau 1 300
 HXFixTestMission 15_Area51_Entrance 1 300
 HXFixTestTravelSoak 01_NYC_UNATCOIsland 2 650
+HXFixTestSavePlayers 01_NYC_UNATCOIsland 1 300
+HXFixTestSaveWorld 01_NYC_UNATCOIsland 1 300 ?HXFixAutoSave=1
+HXFixTestSaveWorld 01_NYC_UNATCOIsland 1 300 ?HXFixLoad=1
+HXFixTestSaveWorldFresh 01_NYC_UNATCOIsland 1 300

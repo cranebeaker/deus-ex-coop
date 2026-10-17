@@ -18,12 +18,17 @@ PLAY
   Host:  open "Deus Ex Co-op", press 1. The game starts on Liberty Island.
   Join:  open "Deus Ex Co-op", press 2. It finds the Steam friend who is
          hosting and starts the game connected to them.
+  Continue: open "Deus Ex Co-op", press 3. The game saves by itself when your
+         group enters a new map (and the host can type CoopSave in the
+         console). Continue starts the host on the last saved map with
+         everyone's items, skills, notes, goals and story progress.
   Keep the small HXCoop window open while you play. Close the game to stop.
   Steam shows you as "playing Spacewar": that is normal, it is how the
   connection is made.
 
 WITHOUT STEAM (fallback)
-  In Deus Ex\System: "Host Co-op (IP).bat" and "Join Co-op (IP).bat".
+  In Deus Ex\System: "Host Co-op (IP).bat", "Join Co-op (IP).bat" and
+  "Continue Co-op (IP).bat".
   The host must forward UDP ports 7790-7792 on their router, or everyone joins
   the same VPN (Tailscale, ZeroTier, Radmin VPN) and uses the host's VPN IP.
 

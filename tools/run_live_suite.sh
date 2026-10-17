@@ -9,10 +9,10 @@ GAME=${1:-$ROOT/game}; PORT=${2:-7790}; EXTRA=$3; OUT=${4:-$ROOT/re/suite}
 case "$GAME" in /*) ;; *) GAME="$ROOT/$GAME";; esac
 case "$OUT" in /*) ;; *) OUT="$ROOT/$OUT";; esac
 mkdir -p "$OUT"; : > "$OUT/summary.txt"
-grep -v "^#" "${SUITE_LIST:-$ROOT/tools/live_suite.txt}" | while read t map clients timeout; do
+grep -v "^#" "${SUITE_LIST:-$ROOT/tools/live_suite.txt}" | while read t map clients timeout extra; do
 	[ -z "$t" ] && continue
 	log="$OUT/${t}_${map}.txt"
-	powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$ROOT/tools/run_live_test.ps1")" -Game "$(cygpath -w "$GAME")" -Test "$t" -Map "$map" -Port "$PORT" -Clients "$clients" -Timeout "$timeout" -Extra "$EXTRA" ${SUITE_STEAM:+-SteamMock} > "$log" 2>&1 < /dev/null
+	powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$ROOT/tools/run_live_test.ps1")" -Game "$(cygpath -w "$GAME")" -Test "$t" -Map "$map" -Port "$PORT" -Clients "$clients" -Timeout "$timeout" -Extra "$EXTRA$extra" ${SUITE_STEAM:+-SteamMock} > "$log" 2>&1 < /dev/null
 	res=$(grep -o "RESULT: [A-Z]*" "$log" | tail -1); done_line=$(grep -a -o "DONE .*" "$log" | tail -1)
 	echo "$t $map -> ${res:-RESULT: NONE} ($done_line)" | tee -a "$OUT/summary.txt"
 done

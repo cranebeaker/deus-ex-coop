@@ -29,6 +29,15 @@ var string LiveTestName;
 var string TestNetEmu; // ?HXFixNetEmu=, see HXFixTestBase.
 var float MinSwitchCountdown; // ?HXFixSwitchCountdown=, see ProcessServerTravel.
 
+// Co-op save (see HXFixSaveWorld, HXFixSavePlayers).
+var bool bLoadedGame;       // Started with ?HXFixLoad=1 and the saved world was restored.
+var string RestoredNames;   // "|Name|Name|" players already restored from the save.
+var bool bAutoSavePending;  // Autosave of the group's arrival on this map is due.
+var bool bAutoSaveDone;
+var bool bAutoSaveAllowed;  // Off in live tests unless ?HXFixAutoSave=1.
+var float AutoSaveTime;
+var int SaveCount;          // Saves done by this game info (tests).
+
 // Replicate all bool flags up to this many (table holds 256).
 var int FlagReplicationBudget;
 
@@ -36,15 +45,42 @@ event InitGame( String Options, out String Error )
 {
 	local float TestExitTime;
 	local HXFixTestExit TestExit;
+	local HXSteve LevelSteve;
+
+	// Co-op save: the flags must be in place before Super.InitGame spawns the
+	// mission script, which reads them. HXGameInfo finds Steve the same way.
+	if ( ParseOption(Options,"HXFixLoad")!="" && ParseOption(Options,"HXFixLoad")!="0" )
+	{
+		foreach AllActors( class'HXSteve', LevelSteve )
+			break;
+		if ( !class'HXFixSaveWorld'.static.HasSave() )
+			Log( "HXFix: ?HXFixLoad=1 but there is no saved game", 'HXFix' );
+		else if ( Caps(class'HXFixSaveWorld'.static.MapName())!=Caps(string(Level.Outer.Name)) )
+			Log( "HXFix: saved game is on" @ class'HXFixSaveWorld'.static.MapName() @ "not" @ Level.Outer.Name @ ", not loading", 'HXFix' );
+		else if ( LevelSteve!=None )
+		{
+			Steve = LevelSteve;
+			bLoadedGame = class'HXFixSaveWorld'.static.Load( Self, LevelSteve );
+		}
+	}
 
 	Super.InitGame( Options, Error );
+
+	bAutoSaveAllowed = ParseOption(Options,"HXFixTest")=="" || ParseOption(Options,"HXFixAutoSave")=="1";
 
 	if ( MissionScript!=None )
 		Log( "HXFix: MissionScript is" @ MissionScript.Class, 'HXFix' );
 
 	SpawnFixMutators();
 
-	RestoreNotes();
+	if ( bLoadedGame )
+	{
+		// The save has its own notes, the HXFixNoteStore ones may belong to another run.
+		Steve.FlagBase.SetBool( 'HXFixNotesValid', True, True, 0 );
+		Log( "HXFix: restored" @ class'HXFixSaveWorld'.static.RestoreNotes(Self) @ "notes from the saved game", 'HXFix' );
+	}
+	else
+		RestoreNotes();
 
 	// Test helper: add a note, then travel to the given map.
 	if ( ParseOption(Options,"HXFixTestTravel")!="" && ParseOption(Options,"HXFixTestExit")=="" )
@@ -536,6 +572,12 @@ function Tick( float DeltaTime )
 		return;
 	FixTickTime = 0;
 
+	if ( bAutoSavePending && Level.TimeSeconds>=AutoSaveTime )
+	{
+		bAutoSavePending = False;
+		SaveCoop( "autosave" );
+	}
+
 	ProcessDeferredConversations();
 
 	if ( TestDataLinks!="" && !bTestDataLinksDone && Level.TimeSeconds>3.0 )
@@ -755,6 +797,45 @@ event PostLogin( PlayerPawn NewPlayer )
 	for ( i=0; i<ArrayCount(FixMutators); i++ )
 		if ( FixMutators[i]!=None )
 			FixMutators[i].NotifyPostLogin( NewPlayer );
+
+	// Loaded game: give each player back their saved state once (by name).
+	if ( bLoadedGame && InStr( RestoredNames, "|"$NewPlayer.PlayerReplicationInfo.PlayerName$"|" )<0 )
+	{
+		RestoredNames = RestoredNames $ "|" $ NewPlayer.PlayerReplicationInfo.PlayerName $ "|";
+		Log( "HXFix: restore saved player" @ NewPlayer.PlayerReplicationInfo.PlayerName @ "=>"
+			@ class'HXFixSavePlayers'.static.RestorePlayer( HXPlayerPawn(NewPlayer) ), 'HXFix' );
+	}
+
+	// Autosave once the first player has settled in on a new map. Not on the
+	// loaded map itself (nothing new to save), the intro or the endgame.
+	if ( bAutoSaveAllowed && !bAutoSaveDone && !bLoadedGame && DeusExLevelInfo!=None
+		&& DeusExLevelInfo.MissionNumber>0 && DeusExLevelInfo.MissionNumber<90 )
+	{
+		bAutoSaveDone    = True;
+		bAutoSavePending = True;
+		AutoSaveTime     = Level.TimeSeconds + 10.0;
+	}
+}
+
+// ---------------------------------------------------------------------
+// Co-op save. One slot: world state (HXFixSaveWorld) + players
+// (HXFixSavePlayers). Console command for the listen host: CoopSave.
+// ---------------------------------------------------------------------
+
+function bool SaveCoop( string Why )
+{
+	if ( !class'HXFixSaveWorld'.static.Save(Self) )
+		return False;
+	class'HXFixSavePlayers'.static.SaveAll( Level );
+	SaveCount++;
+	Log( "HXFix: co-op save (" $ Why $ ") on" @ Level.Outer.Name, 'HXFix' );
+	BroadcastMessage( "Co-op game saved." );
+	return True;
+}
+
+exec function CoopSave()
+{
+	SaveCoop( "CoopSave" );
 }
 
 // ---------------------------------------------------------------------

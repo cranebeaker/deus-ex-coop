@@ -20,6 +20,7 @@
  *   HXCoop.exe                    menu
  *   HXCoop.exe host [map]         host, default map 01_NYC_UNATCOIsland
  *   HXCoop.exe join [lobby id]    join (no id: a friend who is hosting)
+ *   HXCoop.exe continue           host the saved game (HXFixSave.ini in the game's System folder)
  * Options: --game <dir with HX.exe>  --port <game port, 7790>  --url-extra <?opts for the host URL>
  *          --hx-args <extra HX.exe arguments>  --no-launch (relay only)
  */
@@ -429,6 +430,25 @@ static void host_cb(int id, void *data)
     }
 }
 
+/* Map of the co-op save: SavedMap= in HXFixSave.ini (written by HXFix, empty when there is no save). */
+static bool read_saved_map(char *out, size_t size)
+{
+    char path[MAX_PATH], line[512];
+    out[0] = 0;
+    snprintf(path, sizeof(path), "%s\\HXFixSave.ini", g_game_dir);
+    FILE *f = fopen(path, "r");
+    if (!f) return false;
+    while (fgets(line, sizeof(line), f)) {
+        if (!strncmp(line, "SavedMap=", 9)) {
+            snprintf(out, size, "%s", line + 9);
+            out[strcspn(out, "\r\n")] = 0;
+            break;
+        }
+    }
+    fclose(f);
+    return out[0] != 0;
+}
+
 static int run_host(const char *map)
 {
     S.CreateLobby(g_mm, 1 /* friends only */, MAX_PEERS + 1);
@@ -702,19 +722,28 @@ int main(int argc, char **argv)
     printf("HX Co-op over Steam - signed in as %s\n\n", S.GetPersonaName(g_friends));
 
     if (!mode) {
-        printf("  1) Host a game\n  2) Join a friend's game\n\nChoose 1 or 2: ");
+        printf("  1) Host a game\n  2) Join a friend's game\n  3) Continue saved game\n\nChoose 1, 2 or 3: ");
         for (;;) {
             int c = _getch();
             if (c == '1') { mode = "host"; break; }
             if (c == '2') { mode = "join"; break; }
+            if (c == '3') { mode = "continue"; break; }
             if (c == 27) return 0;
         }
-        printf("%c\n\n", mode[0] == 'h' ? '1' : '2');
+        printf("%c\n\n", mode[0] == 'h' ? '1' : mode[0] == 'j' ? '2' : '3');
     }
     int r;
-    if (!_stricmp(mode, "host")) r = run_host(arg ? arg : "01_NYC_UNATCOIsland");
+    if (!_stricmp(mode, "continue")) {
+        char saved[128];
+        if (!read_saved_map(saved, sizeof(saved)))
+            fail("No saved game found. Host a game first: it saves automatically when your group enters a new map.");
+        printf("Continuing the saved game on %s\n", saved);
+        strncat(g_url_extra, "?HXFixLoad=1", sizeof(g_url_extra) - strlen(g_url_extra) - 1);
+        r = run_host(saved);
+    }
+    else if (!_stricmp(mode, "host")) r = run_host(arg ? arg : "01_NYC_UNATCOIsland");
     else if (!_stricmp(mode, "join")) r = run_join(arg ? strtoull(arg, NULL, 10) : 0);
-    else fail("Usage: HXCoop.exe [host [map] | join [lobby id]]");
+    else fail("Usage: HXCoop.exe [host [map] | join [lobby id] | continue]");
     S.Shutdown();
     return r;
 }

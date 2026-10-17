@@ -1,6 +1,11 @@
 HXFix changes on top of HX 0.9.89.4
 ===================================
 
+Saving (new)
+- Co-op save and continue: autosave on every map change, CoopSave for the host,
+  Continue restores story flags, goals, notes, keys and each player's items, augs,
+  skills, credits and health by name.
+
 Story and missions
 - Ending: the final conversation starts (everyone was stuck letterboxed), ending
   explosions work, cutscenes play for every player, not just the host.

@@ -71,7 +71,7 @@ foreach ($name in "HXDefault.ini", "HX.ini") {
 $coop = Join-Path $sys "HXCoop"
 New-Item -ItemType Directory -Force $coop | Out-Null
 Copy-Item (Join-Path $here "HXCoop\*") $coop -Force
-Copy-Item (Join-Path $here "Play Co-op (Steam).bat"), (Join-Path $here "Host Co-op (IP).bat"), (Join-Path $here "Join Co-op (IP).bat") $sys -Force
+Copy-Item (Join-Path $here "Play Co-op (Steam).bat"), (Join-Path $here "Host Co-op (IP).bat"), (Join-Path $here "Join Co-op (IP).bat"), (Join-Path $here "Continue Co-op (IP).bat") $sys -Force
 
 # Desktop shortcut to the Steam launcher.
 if (-not $NoShortcut) { try {

@@ -27,6 +27,11 @@ You need **Deus Ex: Game of the Year Edition** (Steam or GOG) and **Steam** runn
 3. Open **Deus Ex Co-op**. Host: press **1**. Friend: press **2** (it finds you in their
    Steam friends list and joins).
 
+**Saving:** the game saves by itself every time your group enters a new map (the host can
+also type `CoopSave` in the console). Press **3 (Continue)** to pick up where you left off:
+story progress, goals, notes, keys and every player's items, augs, skills and credits come
+back. Friends get their own gear back when they rejoin with the same name.
+
 Steam shows you as "playing Spacewar" while connected. That is expected: it is Valve's
 free test app, used here to borrow Steam's relay network.
 
