@@ -1,5 +1,7 @@
 # Deus Ex co-op: HX revived
 
+[![Discord](https://img.shields.io/badge/Discord-chat%20and%20help-5865F2?logo=discord&logoColor=white)](https://discord.gg/EXGB49R82t)
+
 Play the whole **Deus Ex** (2000) campaign together with friends, over Steam, without
 IP addresses or port forwarding.
 
